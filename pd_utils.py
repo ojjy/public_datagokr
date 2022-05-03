@@ -7,7 +7,7 @@ from datetime import datetime
 import sqlalchemy
 
 with open("INFO.json", "r") as json_read:
-    info_contents = json.loads(json_read.read())
+    info = json.loads(json_read.read())
 
 class public_data_gokr():
     def __init__(self, tablename, url_prefix, url_parameters, connection_string):
@@ -52,19 +52,19 @@ class public_data_gokr():
     def connect_db(self, dbms_type):
         if dbms_type == "snowflake":
             # 'snowflake://<user_login_name>:<password>@<account_identifier>/<database_name>/<schema_name>?warehouse=<warehouse_name>&role=<role_name>'
-            self.connection_string = f'snowflake://{info_contents["sf_user"]}:{info_contents["sf_pwd"]}@' \
-                                     f'{info_contents["sf_host"]}/{info_contents["sf_db"]}/{info_contents["sf_schema"]}?' \
-                                     f'warehouse={info_contents["sf_wh"]}&role={info_contents["sf_role"]}'
+            self.connection_string = f'snowflake://{info["sf_user"]}:{info["sf_pwd"]}@' \
+                                     f'{info["sf_host"]}/{info["sf_db"]}/{info["sf_schema"]}?' \
+                                     f'warehouse={info["sf_wh"]}&role={info["sf_role"]}'
         elif dbms_type == "mysql":
-            self.connection_string = f'mysql+pymysql://{info_contents["mysql_user"]}:{info_contents["mysql_pwd"]}@' \
-                                     f'{info_contents["mysql_host"]}:{info_contents["mysql_port"]}/{info_contents["mysql_db"]}'
+            self.connection_string = f'mysql+pymysql://{info["mysql_user"]}:{info["mysql_pwd"]}@' \
+                                     f'{info["mysql_host"]}:{info["mysql_port"]}/{info["mysql_db"]}'
             print(self.connection_string)
         elif dbms_type == "postgres":
-            self.connection_string = f'postgresql+psycopg2://{info_contents["postgres_user"]}:{info_contents["postgres_pwd"]}@' \
-                                     f'{info_contents["postgres_host"]}:{info_contents["postgres_port"]}/{info_contents["postgres_db"]}'
+            self.connection_string = f'postgresql+psycopg2://{info["postgres_user"]}:{info["postgres_pwd"]}@' \
+                                     f'{info["postgres_host"]}:{info["postgres_port"]}/{info["postgres_db"]}'
         elif dbms_type == "mssql":
-            self.connection_string = f'mssql+pymssql://{info_contents["mssql_user"]}:{info_contents["mssql_pwd"]}@' \
-                                     f'{info_contents["mssql_host"]}:{info_contents["mssql_port"]}/{info_contents["mssql_db"]}'
+            self.connection_string = f'mssql+pymssql://{info["mssql_user"]}:{info["mssql_pwd"]}@' \
+                                     f'{info["mssql_host"]}:{info["mssql_port"]}/{info["mssql_db"]}'
         else:
             raise "UNSUPPORTED DBMS"
 
@@ -75,6 +75,29 @@ if __name__ == "__main__":
     numOfRows=100
     pdb = public_data_gokr(tablename="O_Mdcn_HtfsList",
                            url_prefix="http://apis.data.go.kr/1471000/HtfsInfoService2/getHtfsList?",
-                           url_parameters=f"type=json&numOfRows={numOfRows}&serviceKey={info_contents['serviceKey']}",
+                           url_parameters=f"type=json&numOfRows={numOfRows}&serviceKey={info['serviceKey']}",
                            connection_string=None)
     pdb.crawler()
+
+
+"""
+DDL
+- postgresql
+create table o_mdcn_htfslist
+(ENTRPS VARCHAR(128) NULL
+, PRDUCT VARCHAR(1024) NULL
+, STTEMNT_NO VARCHAR(1024) NULL
+, REGIST_DT VARCHAR(1024) NULL
+, REGT_ID VARCHAR(10) NULL
+, REG_DTTM DATE null)
+
+-- mysql
+create table o_mdcn_htfslist
+(ENTRPS VARCHAR(128) NULL
+, PRDUCT VARCHAR(1024) NULL
+, STTEMNT_NO VARCHAR(1024) NULL
+, REGIST_DT VARCHAR(1024) NULL
+, REGT_ID VARCHAR(10) NULL
+, REG_DTTM DATE null)
+
+"""
