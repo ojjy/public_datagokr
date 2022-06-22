@@ -1,4 +1,4 @@
-from pd_utils import public_data_gokr, info
+from pdutils import public_data_gokr, info
 import pandas as pd
 import requests
 import json
